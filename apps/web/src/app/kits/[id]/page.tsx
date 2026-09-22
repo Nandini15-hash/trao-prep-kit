@@ -87,12 +87,20 @@ function KitDetail({ id }: { id: string }) {
         <div className="flex items-center gap-3">
           <KitStatusBadge status={kit.status} />
           {kit.status === "ready" && (
-            <Link
-              href={`/kits/${id}/practice`}
-              className="rounded-md bg-brand px-3 py-1.5 text-sm text-brand-foreground hover:bg-brand/90"
-            >
-              Practice
-            </Link>
+            <>
+              <Link
+                href={`/kits/${id}/practice`}
+                className="rounded-md bg-brand px-3 py-1.5 text-sm text-brand-foreground hover:bg-brand/90"
+              >
+                Practice
+              </Link>
+              <Link
+                href={`/kits/${id}/print`}
+                className="rounded-md border border-slate-300 px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50"
+              >
+                Print / Export
+              </Link>
+            </>
           )}
           <button
             type="button"
