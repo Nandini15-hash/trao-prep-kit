@@ -79,12 +79,22 @@ export async function callGemini(prompt: string, options: GeminiCallOptions = {}
       }
       if (!res.ok) {
         const detail = await res.text().catch(() => "");
-        throw new LlmError(`Gemini returned HTTP ${res.status}: ${detail.slice(0, 300)}`, "HTTP_ERROR");
+        // Any other 4xx (400, 401, 403...) is a property of *this*
+        // request — a malformed body, a bad key — not a transient
+        // server condition, so it goes in the same non-retryable bucket
+        // as BLOCKED above rather than HTTP_ERROR: retrying an
+        // unmodified request wouldn't change the outcome, just burn the
+        // retry budget and delay a fix the caller actually needs to make.
+        throw new LlmError(`Gemini returned HTTP ${res.status}: ${detail.slice(0, 300)}`, "BAD_REQUEST");
       }
 
       const data = (await res.json()) as GeminiResponse;
       if (data.promptFeedback?.blockReason) {
-        throw new LlmError(`Prompt blocked: ${data.promptFeedback.blockReason}`, "HTTP_ERROR");
+        // Distinct from HTTP_ERROR deliberately: a safety-filter block is
+        // a property of the prompt/content, not a transient server
+        // condition, so retrying the identical prompt would just burn
+        // the retry budget waiting for the same block again.
+        throw new LlmError(`Prompt blocked: ${data.promptFeedback.blockReason}`, "BLOCKED");
       }
       const text = data.candidates?.[0]?.content?.parts?.map((p) => p.text ?? "").join("") ?? "";
       if (!text.trim()) {
