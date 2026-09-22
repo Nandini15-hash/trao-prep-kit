@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { hashPassword, verifyPassword, signSession, verifySession } from "../services/auth.service";
+import { hashPassword, verifyPassword, signSession, verifySession, sessionCookieOptions } from "../services/auth.service";
 
 describe("auth.service", () => {
   it("hashes a password so it cannot be compared as plain text, but verifies correctly", async () => {
@@ -19,5 +19,15 @@ describe("auth.service", () => {
     expect(verifySession("not-a-real-token")).toBeNull();
     const token = signSession({ sub: "user-123" });
     expect(verifySession(token.slice(0, -2) + "xx")).toBeNull();
+  });
+
+  it("uses SameSite=Lax and non-Secure outside production (plain http localhost)", () => {
+    // The production case (SameSite=None + Secure, needed once frontend
+    // and backend are on different hosts) is covered separately in
+    // auth.service.production.test.ts — NODE_ENV is read once at import
+    // time, so it can't be flipped within this file.
+    const opts = sessionCookieOptions();
+    expect(opts.sameSite).toBe("lax");
+    expect(opts.secure).toBe(false);
   });
 });

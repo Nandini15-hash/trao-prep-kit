@@ -36,10 +36,20 @@ export function verifySession(token: string): SessionPayload | null {
 export const SESSION_COOKIE = "session";
 
 export function sessionCookieOptions() {
+  // Deployment (Section 12) almost always puts the frontend and backend
+  // on two different free-tier hosts (e.g. Vercel + Render) — genuinely
+  // cross-site from the cookie's point of view. A `lax` cookie is not
+  // sent on a cross-site fetch/XHR (only a top-level navigation), so it
+  // would silently break every authenticated request in production even
+  // though local dev (same-site http://localhost) worked fine. `none`
+  // requires `secure`, which requires https — true in every real
+  // deployment, never true for local http dev, so the two are tied
+  // together rather than independently configured.
+  const crossSite = env.NODE_ENV === "production";
   return {
     httpOnly: true,
-    secure: env.NODE_ENV === "production",
-    sameSite: "lax" as const,
+    secure: crossSite,
+    sameSite: (crossSite ? "none" : "lax") as "none" | "lax",
     maxAge: env.SESSION_TTL_SECONDS * 1000,
     path: "/",
   };
