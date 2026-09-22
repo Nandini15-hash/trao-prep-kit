@@ -125,7 +125,11 @@ npm test   # runs the apps/api vitest suite (149 tests)
 
 ## LLM provider
 
-**Google Gemini**, free tier (`gemini-2.0-flash` by default). Reasons:
+**Google Gemini**, free tier (`gemini-3.6-flash` by default -- configurable
+via `GEMINI_MODEL`; Google periodically deprecates flash model names, so if
+generation starts failing with an HTTP 404 "model no longer available"
+error, check https://aistudio.google.com for the current name and update
+`GEMINI_MODEL`). Reasons:
 
 - A genuinely free tier with no card required, which the brief requires.
 - Native JSON-mode output (`responseMimeType: "application/json"`), which
