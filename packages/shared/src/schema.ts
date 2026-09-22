@@ -89,6 +89,7 @@ export const QuestionCategory = z.enum([
   "system-design",
   "company-fit",
 ]);
+export type QuestionCategory = z.infer<typeof QuestionCategory>;
 
 export const QuestionSchema = z.object({
   id: z.string(),
