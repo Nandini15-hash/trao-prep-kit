@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import { env } from "./lib/env";
 import { healthRouter } from "./routes/health";
 import { authRouter } from "./routes/auth.routes";
+import { kitRouter } from "./routes/kit.routes";
 
 export function createApp() {
   const app = express();
@@ -23,6 +24,7 @@ export function createApp() {
 
   app.use(healthRouter);
   app.use(authRouter);
+  app.use(kitRouter);
 
   // 404
   app.use((req: Request, res: Response) => {

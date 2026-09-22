@@ -19,6 +19,18 @@ const kitDocumentSchema = new Schema(
       required: true,
       default: "pending",
     },
+    // The submission that kicked off generation. Kept on the document
+    // (rather than only living in the eventual Kit.source) so it's
+    // available while status is still pending/generating — both to show
+    // the user what's in flight, and for the duplicate-submission check
+    // in kit.service.ts (Section 10: resubmitting the same JD/company/
+    // timeline before the first run finishes should not spawn a second
+    // job).
+    input: {
+      jd: { type: String, required: true },
+      companyUrl: { type: String, required: true },
+      days: { type: Number, required: true },
+    },
     // Set once generation has produced a structurally-valid kit.
     data: { type: Schema.Types.Mixed, default: null },
     // Populated when status === "failed"; structured like Appendix B's error.
