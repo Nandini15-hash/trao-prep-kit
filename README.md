@@ -438,8 +438,15 @@ free tiers, with env vars handled securely (never committed — see
 
 1. New Web Service → point at this repo.
 2. Root directory: repo root. Build command:
-   `npm install && npm run build --workspace=packages/shared && npm run build --workspace=apps/api`.
+   `npm install --include=dev && npm run build --workspace=packages/shared && npm run build --workspace=apps/api`.
    Start command: `npm run start --workspace=apps/api`.
+   (The `--include=dev` matters: Render sets `NODE_ENV=production` during
+   the build, and plain `npm install` skips `devDependencies` under that
+   flag — which is where `typescript` lives in every workspace here. Without
+   it, `npm install` silently installs zero copies of TypeScript and the
+   build script falls through to whatever `tsc` happens to be on Render's
+   system PATH instead of your project's pinned version, which can fail in
+   confusing, version-independent ways.)
 3. Set env vars from `apps/api/.env.example`: `MONGODB_URI` (an Atlas
    connection string), `JWT_SECRET` (a real random 32+ char secret, not the
    placeholder), `NODE_ENV=production`, `CORS_ORIGIN` set to the frontend's
