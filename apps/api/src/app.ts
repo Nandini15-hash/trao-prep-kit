@@ -3,6 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { env } from "./lib/env";
 import { healthRouter } from "./routes/health";
+import { authRouter } from "./routes/auth.routes";
 
 export function createApp() {
   const app = express();
@@ -21,6 +22,7 @@ export function createApp() {
   app.use(express.json({ limit: "2mb" }));
 
   app.use(healthRouter);
+  app.use(authRouter);
 
   // 404
   app.use((req: Request, res: Response) => {

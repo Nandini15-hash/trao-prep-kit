@@ -21,9 +21,6 @@
     "paths": {
       "@/*": [
         "./src/*"
-      ],
-      "@trao/shared": [
-        "../../packages/shared/src/index.ts"
       ]
     },
     "plugins": [
